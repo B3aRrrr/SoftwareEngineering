@@ -43,23 +43,9 @@ using Poco::Util::OptionCallback;
 using Poco::Util::OptionSet;
 using Poco::Util::ServerApplication;
 
-#include "../../database/user.h"
-#include "../../helper.h"
-
-static bool hasSubstr(const std::string &str, const std::string &substr)
-{
-    if (str.size() < substr.size())
-        return false;
-    for (size_t i = 0; i <= str.size() - substr.size(); ++i)
-    {
-        bool ok{true};
-        for (size_t j = 0; ok && (j < substr.size()); ++j)
-            ok = (str[i + j] == substr[j]);
-        if (ok)
-            return true;
-    }
-    return false;
-}
+#include "../../../database/user/user.h"
+#include "../../../utils/helper.h"
+#include "../../../utils/hasSubstr.h"
 
 class UserHandler : public HTTPRequestHandler
 {
@@ -151,7 +137,7 @@ public:
                     root->set("type", "/errors/not_found");
                     root->set("title", "Internal exception");
                     root->set("status", "404");
-                    root->set("detail", "user ot found");
+                    root->set("detail", "user not found");
                     root->set("instance", "/user");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
@@ -210,7 +196,7 @@ public:
                 Poco::JSON::Stringifier::stringify(arr, ostr);
 
                 return;
-            }
+            }         
             else if (request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST)
             {
                 if (form.has("first_name") && form.has("last_name") && form.has("email") && form.has("title") && form.has("login") && form.has("password"))
@@ -268,6 +254,7 @@ public:
                     }
                 }
             }
+       
         }
         catch (...)
         {
@@ -280,7 +267,7 @@ public:
         root->set("type", "/errors/not_found");
         root->set("title", "Internal exception");
         root->set("status", Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
-        root->set("detail", "request ot found");
+        root->set("detail", "request not found");
         root->set("instance", "/user");
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);

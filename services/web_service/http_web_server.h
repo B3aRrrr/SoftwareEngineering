@@ -1,6 +1,6 @@
 #ifndef HTTPWEBSERVER_H
 #define HTTPWEBSERVER_H
-
+// запуск порта сервиса
 #include "Poco/Net/HTTPServer.h"
 #include "Poco/Net/HTTPRequestHandler.h"
 #include "Poco/Net/HTTPRequestHandlerFactory.h"
@@ -38,7 +38,7 @@ using Poco::Util::OptionSet;
 using Poco::Util::ServerApplication;
 
 #include "http_request_factory.h"
-#include "../database/user.h"
+#include "../../database/user/user.h"
 
 class HTTPWebServer : public Poco::Util::ServerApplication
 {

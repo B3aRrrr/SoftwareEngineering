@@ -1,5 +1,5 @@
 #include "user.h"
-#include "database.h"
+#include "../database.h"
 #include "../config/config.h"
 
 #include <Poco/Data/MySQL/Connector.h>
@@ -64,7 +64,6 @@ namespace database
 
         return root;
     }
-
     User User::fromJSON(const std::string &str)
     {
         User user;
