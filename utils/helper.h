@@ -2,6 +2,7 @@
 #include <string>
 #include "Poco/Base64Decoder.h"
 #include <istream>
+#include <optional>
 #include <ostream>
 #include "Poco/Net/HTTPServer.h"
 #include "Poco/Net/HTTPRequestHandler.h"
@@ -60,6 +61,7 @@ bool get_identity(const std::string identity, std::string &login, std::string &p
     password = decoded.substr(pos + 1);
     return true;
 }
+/*
 std::optional<std::string> do_get(const std::string &url, const std::string &login, const std::string &password)
 {
     std::string string_result;
@@ -105,6 +107,7 @@ std::optional<std::string> do_get(const std::string &url, const std::string &log
 
     return string_result;
 }
+*/
 bool get_pageOwner(const std::string identity, std::string &first_name, std::string &last_name)
 {
     std::istringstream istr(identity);
@@ -120,6 +123,7 @@ bool get_pageOwner(const std::string identity, std::string &first_name, std::str
     last_name = decoded.substr(pos + 1);
     return true;
 }
+/*
 int TryAuth(HTTPServerRequest &request,  HTTPServerResponse &response)
 {
     std::string scheme;
@@ -178,3 +182,4 @@ int TryAuth(HTTPServerRequest &request,  HTTPServerResponse &response)
 
     return 0;
 }
+*/

@@ -8,12 +8,14 @@
 
 Person(user, "Пользователь")
 
-Container(user_service, "Сервис работы с пользователем", "C++")    
-Container(other_service, "Сервис делающий что-то", "C++") 
+Container(web_service, "Сервис работы с пользователем", "C++")    
+Container(page_service, "Сервис работы с страницей пользователя", "C++") 
+Container(message_service, "Сервис общения пользователей", "C++") 
 
-Rel(user, user_service, "Управлять пользователям")
-Rel(user, other_service, "Сделать что-то полезное")
-Rel(other_service,user_service, "/auth - проверка логина/пароля")
+Rel(user, web_service, "Управлять пользователям")
+Rel(page, page_service, "Управлять информацией страниц пользоваетелей")
+Rel(message, message_service, "Работа с сообщениями")
+Rel(user_service, "/auth - проверка логина/пароля")
 
 @enduml
 ```

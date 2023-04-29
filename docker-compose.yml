@@ -27,35 +27,46 @@ services:
     volumes:
       - db-node-ex01-data:/var/lib/mysql
   
-  # web_service:
-  #   build:
-  #     context: web_service
-  #     dockerfile: Dockerfile
-  #   container_name: web_service
-  #   environment:
-  #     - DB_HOST=mai-db-node-ex01
-  #     - DB_PORT=3306
-  #     - DB_LOGIN=stud
-  #     - DB_PASSWORD=stud
-  #     - DB_DATABASE=archdb
-  #   ports:
-  #     - 8080:8080
-  #   networks:
-  #     - arch-network
-  #   depends_on:
-  #     mai-db-node-ex01:
-  #       condition: service_healthy
-  # other_server:
-  #   build:
-  #     context: web_service
-  #     dockerfile: Dockerfile
-  #   container_name: web_service
-  #   environment:
-  #     - SERVICE_HOST=web_service
-  #   ports:
-  #     - 8081:8081
-  #   networks:
-  #     - arch-network
+  web_service:
+    build:
+      context: services/web_service
+      dockerfile: Dockerfile
+    container_name: web_service
+    environment:
+      - DB_HOST=mai-db-node-ex01
+      - DB_PORT=3360
+      - DB_LOGIN=stud
+      - DB_PASSWORD=stud
+      - DB_DATABASE=archdb
+    ports:
+      - 8080:8080
+    networks:
+      - arch-network
+    depends_on:
+      mai-db-node-ex01:
+        condition: service_healthy
+  page_service:
+    build:
+      context: services/page_service
+      dockerfile: Dockerfile
+    container_name: page_service
+    environment:
+      - SERVICE_HOST=page_service
+    ports:
+      - 8082:8082
+    networks:
+      - arch-network
+  message_service:
+    build:
+      context: services/message_service
+      dockerfile: Dockerfile
+    container_name: message_service
+    environment:
+      - SERVICE_HOST=message_service
+    ports:
+      - 8081:8081
+    networks:
+      - arch-network
 
 volumes:
   db-node-ex01-data:

@@ -13,6 +13,7 @@
 #include <exception>
 #include <algorithm>
 #include <future>
+#include <optional>
 
 using namespace Poco::Data::Keywords;
 using Poco::Data::Session;
