@@ -19,7 +19,7 @@ services:
     networks:
       - arch-network
     ports:
-      - 3360:3360
+      - 3360:3306
     healthcheck:
       test: "/usr/bin/mysql --user=stud --password=stud --execute \"SHOW DATABASES;\""
       timeout: 20s
@@ -34,7 +34,7 @@ services:
     container_name: web_service
     environment:
       - DB_HOST=mai-db-node-ex01
-      - DB_PORT=3360
+      - DB_PORT=3306
       - DB_LOGIN=stud
       - DB_PASSWORD=stud
       - DB_DATABASE=archdb
@@ -52,6 +52,11 @@ services:
     container_name: page_service
     environment:
       - SERVICE_HOST=page_service
+      - DB_HOST=mai-db-node-ex01
+      - DB_PORT=3306
+      - DB_LOGIN=stud
+      - DB_PASSWORD=stud
+      - DB_DATABASE=archdb
     ports:
       - 8082:8082
     networks:
@@ -62,7 +67,12 @@ services:
       dockerfile: Dockerfile
     container_name: message_service
     environment:
-      - SERVICE_HOST=message_service
+      - SERVICE_HOST=page_service
+      - DB_HOST=mai-db-node-ex01
+      - DB_PORT=3306
+      - DB_LOGIN=stud
+      - DB_PASSWORD=stud
+      - DB_DATABASE=archdb
     ports:
       - 8081:8081
     networks:
