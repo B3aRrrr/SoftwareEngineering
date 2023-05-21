@@ -25,18 +25,23 @@ namespace database
         {
 
             Poco::Data::Session session = database::Database::get().create_session();
-            Statement create_stmt(session);
-            create_stmt << "CREATE TABLE IF NOT EXISTS `Page` (`id` INT NOT NULL AUTO_INCREMENT,"
-                        << "`first_name` VARCHAR(256) NOT NULL,"
-                        << "`last_name` VARCHAR(256) NOT NULL,"       
-                        << "`lovely_books` VARCHAR(256) NOT NULL,"
-                        << "`lovely_musics` VARCHAR(256) NOT NULL,"
-                        << "`lovely_movies` VARCHAR(256) NULL,"
-                        << "`religion` VARCHAR(256) NULL,"
-                        << "`email` VARCHAR(256) NOT NULL,"
+            for (auto &hint : database::Database::get_all_hints())
+            {
+                Statement create_stmt(session);
+                create_stmt << "CREATE TABLE IF NOT EXISTS `Page` (`id` INT NOT NULL AUTO_INCREMENT,"
+                            << "`first_name` VARCHAR(256) NOT NULL,"
+                            << "`last_name` VARCHAR(256) NOT NULL,"       
+                            << "`lovely_books` VARCHAR(256) NOT NULL,"
+                            << "`lovely_musics` VARCHAR(256) NOT NULL,"
+                            << "`lovely_movies` VARCHAR(256) NULL,"
+                            << "`religion` VARCHAR(256) NULL,"
+                            << "`email` VARCHAR(256) NOT NULL,"
 
-                        << "PRIMARY KEY (`id`),KEY `fn` (`first_name`),KEY `ln` (`last_name`));",
-                now;
+                            << "PRIMARY KEY (`id`),KEY `fn` (`first_name`),KEY `ln` (`last_name`));",
+                    now;
+
+                std::cout << create_stmt.toString() << std::endl;
+            }
         }
 
         catch (Poco::Data::MySQL::ConnectionException &e)
@@ -162,10 +167,14 @@ namespace database
             Poco::Data::Statement select(session);
             std::vector<Page> result;
             Page a;
+            std::string sharding_hint = database::Database::sharding_hint_2(first_name,last_name);
+            std::string select_str = "SELECT id, first_name, last_name, email, lovely_books,lovely_musics, lovely_movies, religion FROM Page where first_name=? and last_name=?";
+            select_str += sharding_hint;
+            std::cout << select_str << std::endl;
+            
             first_name += "%";
             last_name += "%";
-            select << "SELECT id, first_name, last_name, email, lovely_books,lovely_musics, lovely_movies, religion FROM Page where first_name=? and last_name=?",
-                into(a._id),
+            select << select_str,
                 into(a._first_name),
                 into(a._last_name),
                 into(a._email),
@@ -206,8 +215,12 @@ namespace database
         {
             Poco::Data::Session session = database::Database::get().create_session();
             Poco::Data::Statement insert(session);
+            std::string sharding_hint = database::Database::sharding_hint_2(_first_name,_last_name);
+            std::string insert_str = "INSERT INTO Page (first_name,last_name,email,lovely_books,lovely_musics,lovely_movies,religion) VALUES(?,?,?,?,?,?,?)";
+            insert_str += sharding_hint;
+            std::cout << insert_str << std::endl;
 
-            insert << "INSERT INTO Page (first_name,last_name,email,lovely_books,lovely_musics,lovely_movies,religion) VALUES(?,?,?,?,?,?,?)",
+            insert << insert_str,
                 use(_first_name),
                 use(_last_name),
                 use(_email),
@@ -219,7 +232,7 @@ namespace database
             insert.execute();
 
             Poco::Data::Statement select(session);
-            select << "SELECT LAST_INSERT_ID()",
+            select << "SELECT LAST_INSERT_ID()"+sharding_hint;
                 into(_id),
                 range(0, 1); //  iterate over result set one row at a time
 

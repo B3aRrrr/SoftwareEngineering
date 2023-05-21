@@ -193,34 +193,34 @@ class MessageHandler : public HTTPRequestHandler
                     return;
             }
             else if (request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST)
-        {
-            if (form.has("id_from")&&form.has("id_to")&&form.has("message"))
             {
-                std::cout << "add message" << std::endl;
-                database::Message message;
-                message.id_from() = atol(form.get("id_from").c_str());
-                message.id_to() = atol(form.get("id_to").c_str());
-                message.message() = form.get("message");
+                if (form.has("id_from")&&form.has("id_to")&&form.has("message"))
+                {
+                    std::cout << "add message" << std::endl;
+                    database::Message message;
+                    message.id_from() = atol(form.get("id_from").c_str());
+                    message.id_to() = atol(form.get("id_to").c_str());
+                    message.message() = form.get("message");
 
-                try
-                {
-                    message.save_to_mysql();
-                    response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                    response.setChunkedTransferEncoding(true);
-                    response.setContentType("application/json");
-                    std::ostream &ostr = response.send();
-                    ostr << message.get_id();
-                    return;
-                }
-                catch (...)
-                {
-                    response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
-                    std::ostream &ostr = response.send();
-                    ostr << "{ \"result\": false , \"reason\": \"exception\" }";
-                    response.send();
+                    try
+                    {
+                        message.save_to_mysql();
+                        response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+                        response.setChunkedTransferEncoding(true);
+                        response.setContentType("application/json");
+                        std::ostream &ostr = response.send();
+                        ostr << message.get_id();
+                        return;
+                    }
+                    catch (...)
+                    {
+                        response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
+                        std::ostream &ostr = response.send();
+                        ostr << "{ \"result\": false , \"reason\": \"exception\" }";
+                        response.send();
+                    }
                 }
             }
-        }
         }
         catch (...)
         {

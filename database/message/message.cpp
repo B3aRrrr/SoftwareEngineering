@@ -81,14 +81,19 @@ namespace database
         {
 
             Poco::Data::Session session = database::Database::get().create_session();
-            Statement create_stmt(session);
-                create_stmt << "CREATE TABLE IF NOT EXISTS Message (id INT NOT NULL AUTO_INCREMENT,"
-                            << "id_from INT NOT NULL,"
-                            << "id_to INT NOT NULL,"
-                            << "message VARCHAR(256)  NOT NULL,"
-                            << "`date` DATETIME NOT NULL,"
-                            << "PRIMARY KEY (id),KEY ft (id_from,id_to));",
-                            now;
+            for(auto &hint : database::Database::get_all_hints())
+            {
+                Statement create_stmt(session);
+                    create_stmt << "CREATE TABLE IF NOT EXISTS Message (id INT NOT NULL AUTO_INCREMENT,"
+                                << "id_from INT NOT NULL,"
+                                << "id_to INT NOT NULL,"
+                                << "message VARCHAR(256)  NOT NULL,"
+                                << "`date` DATETIME NOT NULL,"
+                                << "PRIMARY KEY (id),KEY ft (id_from,id_to));",
+                                now;
+
+                std::cout << create_stmt.toString() << std::endl;
+            }
 
         }
 
@@ -104,7 +109,127 @@ namespace database
             throw;
         } 
     }
+    #pragma region Sharding
+    std::vector<long> Message::all_contact(long id)
+    {
+        std::vector<long> result;
+        // get all hints for shards
+        std::vector<std::string> hints = database::Database::get_all_hints();
 
+        std::vector<std::future<std::vector<long>>> futures;
+
+        // map phase in parallel
+        for (const std::string &hint : hints)
+        {
+            auto handle = std::async(std::launch::async, [id, hint]() -> std::vector<long>
+                                     {
+                                         std::vector<long> result;
+                                         Poco::Data::Session session = database::Database::get().create_session();
+                                         Statement select(session);
+                                         std::string select_str = "SELECT id_from, id_to, message FROM Message WHERE id_from=";
+                                         select_str += std::to_string(id);
+                                         select_str += " OR id_to=";
+                                         select_str += std::to_string(id);
+                                         select_str += hint;
+                                         select << select_str;
+
+                                         select.execute();
+                                         Poco::Data::RecordSet record_set(select);
+
+                                         bool more = record_set.moveFirst();
+                                         while (more)
+                                         {
+                                             long id_from = record_set[0].convert<long>();
+                                             long id_to = record_set[1].convert<long>();
+                                             if (id_from != id)
+                                                 result.push_back(id_from);
+                                             if (id_to != id)
+                                                 result.push_back(id_to);
+                                             more = record_set.moveNext();
+                                         }
+                                         return result; });
+
+            futures.emplace_back(std::move(handle));
+        }
+
+        // reduce phase
+        // get values
+        for (std::future<std::vector<long>> &res : futures)
+        {
+            std::vector<long> v = res.get();
+            std::copy(std::begin(v),
+                      std::end(v),
+                      std::back_inserter(result));
+        }
+
+        // sort
+        std::vector<long> result_distincted;
+        std::sort(std::begin(result), std::end(result));
+        long old = -1;
+
+        // deduplicate
+        std::copy_if(std::begin(result), std::end(result), std::back_inserter(result_distincted),
+                     [&old](long x)
+                     {
+                         if (x != old)
+                         {
+                             old = x;
+                             return true;
+                         }
+                         else
+                             return false;
+                     });
+
+        return result_distincted;
+    }
+
+    std::vector<Message> Message::read_all(long from, long to)
+    {
+        try
+        {
+            Poco::Data::Session session = database::Database::get().create_session();
+            Statement select(session);
+            std::vector<Message> result;
+            Message a;
+            std::string sharding_hint = database::Database::sharding_hint(from, to);
+            std::string select_str = "SELECT id, id_from, id_to, message FROM Message WHERE id_from=? AND id_to=? ";
+            select_str += sharding_hint;
+            std::cout << select_str << std::endl;
+
+            select << select_str,
+                into(a._id),
+                into(a._id_from),
+                into(a._id_to),
+                into(a._message),
+                use(from),
+                use(to),
+                range(0, 1); //  iterate over result set one row at a time
+
+            while (!select.done())
+            {
+                if (select.execute())
+                    result.push_back(a);
+            }
+            return result;
+        }
+
+        catch (Poco::Data::MySQL::ConnectionException &e)
+        {
+            std::cout << "connection:" << e.what() << std::endl;
+            throw;
+        }
+        catch (Poco::Data::MySQL::StatementException &e)
+        {
+
+            std::cout << "statement:" << e.what() << std::endl;
+            throw;
+        }
+    }
+
+
+    #pragma endregion Sharding - End
+
+    #pragma region Old
     void Message::send(long id_from, long id_to,const std::string &message)
     {
         try
@@ -140,10 +265,10 @@ namespace database
         {
             Poco::Data::Session session = database::Database::get().create_session();
             Poco::Data::Statement insert(session);
-            /*std::string sharding_hint = database::Database::sharding_hint(_id_from, _id_to);*/
+            std::string sharding_hint = database::Database::sharding_hint(_id_from, _id_to);
 
             std::string select_str = "INSERT INTO Message (id_from,id_to,message) VALUES(?, ?, ?) ";
-            /*select_str += sharding_hint;*/
+            select_str += sharding_hint;
             std::cout << select_str << std::endl;
 
             insert << select_str,
@@ -153,9 +278,9 @@ namespace database
                 now;
 
             Poco::Data::Statement select(session);
-            select << "SELECT LAST_INSERT_ID()",
+            select << "SELECT LAST_INSERT_ID()"+sharding_hint
                 into(_id),
-                range(0, 1); //  iterate over result set one row at a time
+                range(0, 1); //  iterate over result, set one row at a time
 
             if (!select.done())
             {
@@ -186,4 +311,5 @@ namespace database
         root->set("message", _message);
         return root;
     }
+    #pragma endregion Old
 }
