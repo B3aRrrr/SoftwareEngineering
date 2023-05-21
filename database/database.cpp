@@ -18,7 +18,7 @@ namespace database{
          Poco::Data::MySQL::Connector::registerConnector();
         _pool = std::make_unique<Poco::Data::SessionPool>(Poco::Data::MySQL::Connector::KEY, _connection_string);
     }
-    #pragma region Sharding
+//    #pragma region Sharding
     
     size_t Database::get_max_shard(){
         return 3;
@@ -42,7 +42,7 @@ namespace database{
         key += ";";
         key += std::to_string(to);
 
-        size_t shard_number = std::hash<std::string>{}(key)%get_max_shard();
+        size_t shard_number = std::hash<std::string>{}(key) % (get_max_shard());
 
         std::string result = "-- sharding:";
         result += std::to_string(shard_number);
@@ -57,14 +57,14 @@ namespace database{
         key += ";";
         key += last_name;
 
-        size_t shard_number = std::hash<std::string>{}(key)%get_max_shard();
+        size_t shard_number = std::hash<std::string>{}(key) % (get_max_shard());
 
         std::string result = "-- sharding:";
         result += std::to_string(shard_number);
         return result;
 
     }
-    #pragma endregion Sharding - End
+//    #pragma endregion Sharding - End
 
 
     Database& Database::get(){
