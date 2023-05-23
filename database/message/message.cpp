@@ -89,7 +89,8 @@ namespace database
                                 << "id_to INT NOT NULL,"
                                 << "message VARCHAR(256)  NOT NULL,"
                                 << "`date` DATETIME NOT NULL,"
-                                << "PRIMARY KEY (id),KEY ft (id_from,id_to));",
+                                << "PRIMARY KEY (id),KEY ft (id_from,id_to));"
+                                << hint,
                                 now;
 
                 std::cout << create_stmt.toString() << std::endl;
@@ -109,7 +110,6 @@ namespace database
             throw;
         } 
     }
-    #pragma region Sharding
     std::vector<long> Message::all_contact(long id)
     {
         std::vector<long> result;
@@ -227,9 +227,7 @@ namespace database
     }
 
 
-    #pragma endregion Sharding - End
 
-    #pragma region Old
     void Message::send(long id_from, long id_to,const std::string &message)
     {
         try
@@ -278,7 +276,7 @@ namespace database
                 now;
 
             Poco::Data::Statement select(session);
-            select << "SELECT LAST_INSERT_ID()"+sharding_hint
+            select << "SELECT LAST_INSERT_ID()"+sharding_hint,
                 into(_id),
                 range(0, 1); //  iterate over result, set one row at a time
 
@@ -311,5 +309,4 @@ namespace database
         root->set("message", _message);
         return root;
     }
-    #pragma endregion Old
 }

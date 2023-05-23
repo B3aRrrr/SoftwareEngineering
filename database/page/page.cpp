@@ -37,8 +37,9 @@ namespace database
                             << "`religion` VARCHAR(256) NULL,"
                             << "`email` VARCHAR(256) NOT NULL,"
 
-                            << "PRIMARY KEY (`id`),KEY `fn` (`first_name`),KEY `ln` (`last_name`));",
-                    now;
+                            << "PRIMARY KEY (`id`),KEY `fn` (`first_name`),KEY `ln` (`last_name`));"
+                            << hint,
+                            now;
 
                 std::cout << create_stmt.toString() << std::endl;
             }

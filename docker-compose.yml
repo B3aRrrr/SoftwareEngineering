@@ -1,7 +1,7 @@
-version: '3.1'
+version: '2.1'
 
 services:
-  db-node-1-data:
+  db-node-1:
     build:
       context: mysql
       dockerfile: Dockerfile
@@ -92,13 +92,12 @@ services:
       test: "/usr/bin/mysql --user=stud --password=stud --execute \"SHOW DATABASES;\""
       timeout: 20s
       retries: 5
+    networks:
+      - arch-network
     depends_on:
       - db-node-1
       - db-node-2
       - db-node-3
-      
-    networks:
-      - arch-network
     ports:
       # Mysql Client Port
       - "6033:6033"
@@ -112,8 +111,8 @@ services:
       dockerfile: Dockerfile
     container_name: web_service
     environment:
-      - DB_HOST=mai-db-node-ex01
-      - DB_PORT=3306
+      - DB_HOST=proxysql
+      - DB_PORT=6033
       - DB_LOGIN=stud
       - DB_PASSWORD=stud
       - DB_DATABASE=archdb
@@ -122,12 +121,6 @@ services:
     networks:
       - arch-network
     depends_on:
-      db-node-1:
-        condition: service_started
-      db-node-2:
-        condition: service_started
-      db-node-3:
-        condition: service_started
       proxysql:
         condition: service_started
 
@@ -137,9 +130,9 @@ services:
       dockerfile: Dockerfile
     container_name: page_service
     environment:
-      - SERVICE_HOST=page_service
-      - DB_HOST=mai-db-node-ex01
-      - DB_PORT=3306
+      - SERVICE_HOST=web_service
+      - DB_HOST=proxysql
+      - DB_PORT=6033
       - DB_LOGIN=stud
       - DB_PASSWORD=stud
       - DB_DATABASE=archdb
@@ -157,9 +150,9 @@ services:
       dockerfile: Dockerfile
     container_name: message_service
     environment:
-      - SERVICE_HOST=page_service
-      - DB_HOST=mai-db-node-ex01
-      - DB_PORT=3306
+      - SERVICE_HOST=web_service
+      - DB_HOST=proxysql
+      - DB_PORT=6033
       - DB_LOGIN=stud
       - DB_PASSWORD=stud
       - DB_DATABASE=archdb
