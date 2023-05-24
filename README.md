@@ -1,21 +1,31 @@
-# Пример первого домашнего задания по курсу Архитектура программных систем
+# Социальная сеть
+Необходимо написать программную реализацию социальной сет. 
 
-Обращаю внимание что в сервисах нужно реализовтаь схему простой аутентификации (в данном случае) other_service - выполняет роль стороннего сервиса, а сервис hl_mai_lab_01 - сервиса который работает с данными пользователей и осуществляет аутентификацию
-```plantuml
-@startuml
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+Приложение должно поддерживать работу со следующими данными:
 
+* Страница пользователя
+* Обмен сообщениями чат
 
-Person(user, "Пользователь")
+Требуется реализовать следующий API:
 
-Container(web_service, "Сервис работы с пользователем", "C++")    
-Container(page_service, "Сервис работы с страницей пользователя", "C++") 
-Container(message_service, "Сервис общения пользователей", "C++") 
+* Создание нового пользователя
+* Поиск пользователя по логину
+* Поиск пользователя по маске имени и фамилии
+* Создание и заполнение страницы пользователя
+* Добавление информацмии на страницу
+* Запрос для просмотра других страниц из базы данных
 
-Rel(user, web_service, "Управлять пользователям")
-Rel(page, page_service, "Управлять информацией страниц пользоваетелей")
-Rel(message, message_service, "Работа с сообщениями")
-Rel(user_service, "/auth - проверка логина/пароля")
+***UPD***
 
-@enduml
+Для запуска микросервисов в Docker,  выполните команду в консоли:
+```
+docker-compose up --build
+```
+Тестовые данные для загрузки в базу данных находятся в [my_commands.sql](https://github.com/B3aRrrr/SoftwareEngineering/blob/master/my_commands.sql).
+
+Все таблицы базы данных для работы сервисов будут созданы при первом запуске сервисов.
+
+* Сервис авторизации: [services/web_service](https://github.com/B3aRrrr/SoftwareEngineering/tree/master/services/web_service)
+* Сервис  чатов: [services/message_service](https://github.com/B3aRrrr/SoftwareEngineering/tree/master/services/message_service)
+* Сервис страниц с личной информация: [services/page_service](https://github.com/B3aRrrr/SoftwareEngineering/tree/master/services/page_service)
 ```
