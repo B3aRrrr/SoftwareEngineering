@@ -95,9 +95,12 @@ services:
     networks:
       - arch-network
     depends_on:
-      - db-node-1
-      - db-node-2
-      - db-node-3
+      db-node-1:
+        condition: service_healthy
+      db-node-2:
+        condition: service_healthy
+      db-node-3:
+        condition: service_healthy
     ports:
       # Mysql Client Port
       - "6033:6033"

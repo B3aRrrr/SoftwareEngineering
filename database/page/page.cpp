@@ -1,6 +1,6 @@
 #include "page.h"
 #include "../database.h"
-#include "../config/config.h"
+#include "../../config/config.h"
 
 #include <Poco/Data/MySQL/Connector.h>
 #include <Poco/Data/MySQL/MySQLException.h>
@@ -23,7 +23,6 @@ namespace database
     {
         try
         {
-
             Poco::Data::Session session = database::Database::get().create_session();
             for (auto &hint : database::Database::get_all_hints())
             {
