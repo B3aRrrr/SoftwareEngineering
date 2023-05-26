@@ -124,8 +124,10 @@ services:
     networks:
       - arch-network
     depends_on:
-      proxysql:
-        condition: service_started
+      - proxysql
+      - db-node-1
+      - db-node-2
+      - db-node-3
 
   page_service:
     build:
@@ -144,8 +146,10 @@ services:
     networks:
       - arch-network
     depends_on:
-      web_service:
-        condition: service_started
+      - proxysql
+      - db-node-1
+      - db-node-2
+      - db-node-3
     
   message_service:
     build:
@@ -164,8 +168,10 @@ services:
     networks:
       - arch-network
     depends_on:
-      web_service:
-        condition: service_started
+      - proxysql
+      - db-node-1
+      - db-node-2
+      - db-node-3
 
 volumes:
   db-node-1-data:
