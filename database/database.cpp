@@ -1,5 +1,6 @@
 #include "database.h"
 #include "../config/config.h"
+#include <functional>
 
 namespace database{
     Database::Database(){
@@ -35,6 +36,18 @@ namespace database{
         return result;
     }
 
+    static std::string sharding_hint_single(long id)
+    {
+        std::string key;
+
+        key += std::to_string(id);
+
+        size_t shard_number = std::hash<std::string>{}(key) % (get_max_shard());
+
+        std::string result = "-- sharding:";
+        result += std::to_string(shard_number);
+        return result;
+    }
     std::string Database::sharding_hint(long from, long to){
 
         std::string key;

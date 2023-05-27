@@ -28,7 +28,6 @@ namespace database
             std::string &message();
 
             static void init();
-            static std::vector<Message> read_all(long from,long to);
             static std::vector<long> all_contact(long id);
             static void send(long id_from, long id_to,const std::string &message);
             void save_to_mysql();

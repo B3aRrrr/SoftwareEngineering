@@ -19,6 +19,7 @@ namespace database{
             Poco::Data::Session create_session();
 
             static size_t get_max_shard();
+            static std::string sharding_hint_single(long id);
             static std::string sharding_hint(long from,long to);
             static std::string sharding_hint_2(std::string first_name, std::string last_name);
             
