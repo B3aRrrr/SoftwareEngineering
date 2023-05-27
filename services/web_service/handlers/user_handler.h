@@ -199,13 +199,12 @@ public:
             }         
             else if (request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST)
             {
-                if (form.has("first_name") && form.has("last_name") && form.has("email") && form.has("title") && form.has("login") && form.has("password"))
+                if (form.has("first_name") && form.has("last_name") && form.has("email") && form.has("login") && form.has("password"))
                 {
                     database::User user;
                     user.first_name() = form.get("first_name");
                     user.last_name() = form.get("last_name");
                     user.email() = form.get("email");
-                    user.title() = form.get("title");
                     user.login() = form.get("login");
                     user.password() = form.get("password");
 
