@@ -8,6 +8,6 @@ RUN sudo ldconfig
 RUN cd SoftwareEngineering 
 RUN mkdir build 
 RUN cd build 
-RUN cmake  ..
+RUN cmake  SoftwareEngineering/
 RUN  make
 ENTRYPOINT [ "SoftwareEngineering/build/message_service" ]
