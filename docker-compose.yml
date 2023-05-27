@@ -110,8 +110,8 @@ services:
 
   web_service:
     build:
-      context: services/web_service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/web_service/Dockerfile
     container_name: web_service
     environment:
       - DB_HOST=proxysql
@@ -131,8 +131,8 @@ services:
 
   page_service:
     build:
-      context: services/page_service
-      dockerfile: Dockerfile
+      context: . 
+      dockerfile: services/page_service/Dockerfile
     container_name: page_service
     environment:
       - SERVICE_HOST=web_service
@@ -153,8 +153,8 @@ services:
     
   message_service:
     build:
-      context: services/message_service
-      dockerfile: Dockerfile
+      context: . 
+      dockerfile: services/message_service/Dockerfile
     container_name: message_service
     environment:
       - SERVICE_HOST=web_service
