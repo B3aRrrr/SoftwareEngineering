@@ -42,7 +42,7 @@ namespace database{
 
         key += std::to_string(id);
 
-        size_t shard_number = std::hash<std::string>{}(key) % (get_max_shard());
+        size_t shard_number = std::hash<std::string>{}(key) % (Database::get_max_shard());
 
         std::string result = "-- sharding:";
         result += std::to_string(shard_number);
@@ -56,7 +56,7 @@ namespace database{
         key += ";";
         key += std::to_string(to);
 
-        size_t shard_number = std::hash<std::string>{}(key) % (get_max_shard());
+        size_t shard_number = std::hash<std::string>{}(key) % (Database::get_max_shard());
 
         std::string result = "-- sharding:";
         result += std::to_string(shard_number);
@@ -71,7 +71,7 @@ namespace database{
         key += ";";
         key += last_name;
 
-        size_t shard_number = std::hash<std::string>{}(key) % (get_max_shard());
+        size_t shard_number = std::hash<std::string>{}(key) % (Database::get_max_shard());
 
         std::string result = "-- sharding:";
         result += std::to_string(shard_number);
