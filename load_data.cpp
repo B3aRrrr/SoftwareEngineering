@@ -11,6 +11,9 @@
 #include <Poco/JSON/Parser.h>
 #include <Poco/Dynamic/Var.h>
 
+#include "./database/user/user.h"
+#include "./database/database.h"
+
 auto main() -> int
 {
 
@@ -37,12 +40,12 @@ auto main() -> int
     {
         Poco::Data::Statement create_stmt(session);
         create_stmt << "CREATE TABLE IF NOT EXISTS `User` (`id` INT NOT NULL AUTO_INCREMENT,"
+                        << "`total_id` INT NOT NULL,"
                         << "`first_name` VARCHAR(256) NULL,"
                         << "`last_name` VARCHAR(256) NULL,"
                         << "`login` VARCHAR(256) NULL,"
                         << "`password` VARCHAR(256) NULL,"
                         << "`email` VARCHAR(256) NULL,"
-                        << "`title` VARCHAR(1024) NULL,"
                         << "PRIMARY KEY (`id`),KEY `fn` (`first_name`),KEY `ln` (`last_name`));";
         create_stmt.execute();
         std::cout << "table created" << std::endl;
@@ -70,17 +73,15 @@ auto main() -> int
             Poco::JSON::Object::Ptr object = arr->getObject(i);
             std::string first_name = object->getValue<std::string>("first_name");
             std::string last_name = object->getValue<std::string>("last_name");
-            std::string title = object->getValue<std::string>("title");
             std::string email = object->getValue<std::string>("email");
             std::string login = email;
             std::string password;
 
             Poco::Data::Statement insert(session);
-            insert << "INSERT INTO User (first_name,last_name,email,title,login,password) VALUES(?,?,?, ?, ?, ?)",
+            insert << "INSERT INTO User (first_name,last_name,email,login,password) VALUES(?,?,?,  ?, ?)",
                 Poco::Data::Keywords::use(first_name),
                 Poco::Data::Keywords::use(last_name),
                 Poco::Data::Keywords::use(email),
-                Poco::Data::Keywords::use(title),
                 Poco::Data::Keywords::use(login),
                 Poco::Data::Keywords::use(password);
 
