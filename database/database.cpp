@@ -36,7 +36,7 @@ namespace database{
         return result;
     }
 
-    static std::string sharding_hint_single(long id)
+    std::string sharding_hint_single(long id)
     {
         std::string key;
 
