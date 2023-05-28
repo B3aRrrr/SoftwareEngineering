@@ -182,7 +182,7 @@ namespace database
 
         return result_distincted;
     }
-
+/*
     std::vector<Message> Message::read_all(long from, long to)
     {
         try
@@ -225,7 +225,7 @@ namespace database
             throw;
         }
     }
-
+*/
 
 
     void Message::send(long id_from, long id_to,const std::string &message)
