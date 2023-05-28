@@ -97,12 +97,11 @@ namespace database
             std::vector<std::string> hints = database::Database::get_all_hints();
             std::vector<std::future<std::vector<long>>> futures;
 
-            for (auto $hint :hints)
+            for (const std::string &hint :hints)
             {
                 auto handle = std::async(std::launch::async, [login, password, hint]() mutable -> std::vector<long>
                 {
                     std::vector<long> result;
-
                     Poco::Data::Session session = database::Database::get().create_session();
                     Poco::Data::Statement select(session);
                     std::string select_str = "SELECT my_id From User where login='";
@@ -116,7 +115,7 @@ namespace database
 
                     select.execute();
                     Poco::Data::RecordSet rs(select);
-                    bool more = rs.moveFirst();
+                    bool more  = rs.moveFirst();
                     while(more)
                     {
                             
@@ -201,7 +200,7 @@ namespace database
         first_name += "%";
         last_name += "%";
 
-        for(auto $hint :hints)
+        for(const std::string &hint :hints)
         {
             auto handle = std::async(std::launch::async, [first_name, last_name, hint]() mutable -> std::vector<User>
                 {
