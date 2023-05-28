@@ -62,7 +62,7 @@ namespace database
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
 
         root->set("id", _id);
-         root->set("total_id", _my_id);
+        root->set("total_id", _total_id);
         root->set("first_name", _first_name);
         root->set("last_name", _last_name);
         root->set("email", _email);
