@@ -30,13 +30,13 @@ namespace database
                 Poco::Data::Session session = database::Database::get().create_session();
                 Statement create_stmt(session);
                 create_stmt << "CREATE TABLE IF NOT EXISTS `User` (`id` INT NOT NULL AUTO_INCREMENT,"
-                            << "`my_id` INT NOT NULL,"
+                            << "`total_id` INT NOT NULL,"
                             << "`first_name` VARCHAR(256) NOT NULL,"
                             << "`last_name` VARCHAR(256) NOT NULL,"
                             << "`login` VARCHAR(256) NOT NULL,"
                             << "`password` VARCHAR(256) NOT NULL,"
                             << "`email` VARCHAR(256) NULL,"
-                            << "PRIMARY KEY (`id`), KEY `md` (`my_id`),KEY `fn` (`first_name`),KEY `ln` (`last_name`));"
+                            << "PRIMARY KEY (`id`), KEY `md` (`total_id`),KEY `fn` (`first_name`),KEY `ln` (`last_name`));"
                             << hint,
                             now;
 
@@ -62,7 +62,7 @@ namespace database
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
 
         root->set("id", _id);
-         root->set("my_id", _my_id);
+         root->set("total_id", _my_id);
         root->set("first_name", _first_name);
         root->set("last_name", _last_name);
         root->set("email", _email);
@@ -79,7 +79,7 @@ namespace database
         Poco::JSON::Object::Ptr object = result.extract<Poco::JSON::Object::Ptr>();
 
         user.id() = object->getValue<long>("id");
-        user.my_id() = object->getValue<long>("my_id");
+        user.total_id() = object->getValue<long>("total_id");
         user.first_name() = object->getValue<std::string>("first_name");
         user.last_name() = object->getValue<std::string>("last_name");
         user.email() = object->getValue<std::string>("email");
@@ -159,11 +159,11 @@ namespace database
             Poco::Data::Statement select(session);
             User a;
             std::string sharding_hint = database::Database::sharding_hint_single(id);
-            std::string select_str = "SELECT id, my_id,first_name, last_name, email,login,password FROM User where my_id=?";
+            std::string select_str = "SELECT id, total_id,first_name, last_name, email,login,password FROM User where total_id=?";
             select_str += sharding_hint;
             select << select_str,
                 into(a._id),
-                into(a._my_id),
+                into(a._total_id),
                 into(a._first_name),
                 into(a._last_name),
                 into(a._email),
@@ -209,7 +209,7 @@ namespace database
 
                     Poco::Data::Session session = database::Database::get().create_session();
                     Statement select(session);
-                    std::string select_str = "SELECT id, my_id, first_name, last_name, email, login, password FROM User where first_name='";
+                    std::string select_str = "SELECT id, total_id, first_name, last_name, email, login, password FROM User where first_name='";
                     select_str += first_name;
                     select_str += "' and last_name='";
                     select_str += last_name;
@@ -226,7 +226,7 @@ namespace database
                     {
                         User a;
                         a._id = record_set[0].convert<long>();
-                        a._my_id = record_set[1].convert<long>();
+                        a._total_id = record_set[1].convert<long>();
                         a._first_name = record_set[2].convert<std::string>();
                         a._last_name = record_set[3].convert<std::string>();
                         a._email = record_set[4].convert<std::string>();
@@ -298,7 +298,7 @@ namespace database
             len_database +=1;
             std::string sharding_hint = database::Database::sharding_hint_single(len_database);
             
-            std::string select_str = "INSERT INTO User (my_id,first_name,last_name,email,login,password) VALUES(?, ?,?,?, ?, ?) ";
+            std::string select_str = "INSERT INTO User (total_id,first_name,last_name,email,login,password) VALUES(?, ?,?,?, ?, ?) ";
             select_str += sharding_hint;
             std::cout << select_str << std::endl;
 
@@ -338,6 +338,9 @@ namespace database
             std::cout << "statement:" << e.what() << std::endl;
             throw;
         }
+    }
+    long  User::get_total_id() const{
+        return _total_id;
     }
 
     const std::string &User::get_login() const
@@ -383,6 +386,10 @@ namespace database
     long &User::id()
     {
         return _id;
+    }
+    long &User::total_id()
+    {
+        return _total_id;
     }
 
     std::string &User::first_name()
