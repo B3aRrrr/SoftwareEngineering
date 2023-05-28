@@ -201,7 +201,7 @@ namespace database
         first_name += "%";
         last_name += "%";
 
-        for(const std::string $hint :hints)
+        for(auto $hint :hints)
         {
             auto handle = std::async(std::launch::async, [first_name, last_name, hint]() mutable -> std::vector<User>
                 {
