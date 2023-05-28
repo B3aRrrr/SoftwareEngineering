@@ -97,7 +97,7 @@ namespace database
             std::vector<std::string> hints = database::Database::get_all_hints();
             std::vector<std::future<std::vector<long>>> futures;
 
-            for (const std::string $hint :hints)
+            for (auto $hint :hints)
             {
                 auto handle = std::async(std::launch::async, [login, password, hint]() mutable -> std::vector<long>
                 {
