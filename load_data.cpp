@@ -87,8 +87,25 @@ auto main() -> int
             std::string login = email;
             std::string password;
 
+            long db_len = i + 1;
+            // sharding_hint
+
+            std::string key;
+
+            key += std::to_string(db_len);
+
+            size_t shard_number = std::hash<std::string>{}(key)%(2+1);
+
+            std::string sharding_hint = "-- sharding:";
+            sharding_hint += std::to_string(shard_number);
+
+            std::string select_str = "INSERT INTO User (total_id, first_name,last_name,email,login,password) VALUES(?, ?, ?, ?, ?, ?) ";
+            select_str += sharding_hint;
+            std::cout << select_str << std::endl;
+
             Poco::Data::Statement insert(session);
-            insert << "INSERT INTO User (first_name,last_name,email,login,password) VALUES(?,?,?,?,?)",
+            insert << select_str,
+                Poco::Data::Keywords::use(db_len),
                 Poco::Data::Keywords::use(first_name),
                 Poco::Data::Keywords::use(last_name),
                 Poco::Data::Keywords::use(email),
