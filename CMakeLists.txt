@@ -32,7 +32,7 @@ add_executable(${WEB_SERVICE} mains/web/web.cpp
                                  database/user/user.cpp)
 
                                  
-# add_executable(load_data load_data.cpp)
+add_executable(load_data load_data.cpp)
 
 target_include_directories(${WEB_SERVICE} PRIVATE "${CMAKE_BINARY_DIR}")
 target_compile_options(${WEB_SERVICE} PRIVATE -Wall -Wextra -pedantic -Werror )
