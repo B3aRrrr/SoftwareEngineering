@@ -101,6 +101,8 @@ namespace database
             {
                 auto handle = std::async(std::launch::async, [login, password, hint]() mutable -> std::vector<long>
                 {
+                    std::vector<long> result;
+
                     Poco::Data::Session session = database::Database::get().create_session();
                     Poco::Data::Statement select(session);
                     std::string select_str = "SELECT my_id From User where login='";
@@ -114,7 +116,7 @@ namespace database
 
                     select.execute();
                     Poco::Data::RecordSet rs(select);
-                    bool more rs.moveFirst();
+                    bool more = rs.moveFirst();
                     while(more)
                     {
                             
