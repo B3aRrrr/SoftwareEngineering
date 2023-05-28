@@ -115,7 +115,7 @@ services:
     container_name: web_service
     environment:
       - DB_HOST=proxysql
-      - DB_PORT=6033
+      - DBRT=6033
       - DB_LOGIN=stud
       - DB_PASSWORD=stud
       - DB_DATABASE=archdb

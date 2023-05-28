@@ -1,4 +1,4 @@
-local frandom = io.open("/dev/urandom", "rb")
+1local frandom = io.open("/dev/urandom", "rb")
 local d = frandom:read(4)
 math.randomseed(d:byte(1) + (d:byte(2) * 256) + (d:byte(3) * 65536) + (d:byte(4) * 4294967296))
 

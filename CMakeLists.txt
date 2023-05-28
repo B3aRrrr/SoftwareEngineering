@@ -88,12 +88,12 @@ target_link_libraries(${MESSAGE_SERVICE} PRIVATE
                              "mysqlclient"
                              ZLIB::ZLIB)
 
-# target_link_libraries(load_data PRIVATE 
-#                              ${CMAKE_THREAD_LIBS_INIT} 
-#                              ${Poco_LIBRARIES}
-#                              "PocoData"
-#                              "PocoDataMySQL"                      
-#                              ZLIB::ZLIB)
+target_link_libraries(load_data PRIVATE 
+                             ${CMAKE_THREAD_LIBS_INIT} 
+                             ${Poco_LIBRARIES}
+                             "PocoData"
+                             "PocoDataMySQL"                      
+                             ZLIB::ZLIB)
 
 
 
